@@ -1,0 +1,110 @@
+import board
+import neopixel
+import time
+import random
+num_pixels = 10
+np = neopixel.NeoPixel(board.NEOPIXEL, num_pixels, brightness=.5, auto_write=False)
+
+orange = (255, 116, 0)
+purple = (176, 0, 188)
+green = (0, 116, 0)
+
+
+
+
+# work on proper fade in
+def fade_in(rgb, delay=0.01):
+   mx = max(rgb[0], max(rgb[1], rgb[2]))
+   r_inc = rgb[0] / mx
+   g_inc = rgb[1] / mx
+   b_inc = rgb[2] / mx
+   r, g, b = rgb
+   print('r - {}, g - {}, b - {}'.format(r, g, b))
+   while r <= 256 and g<= 256 and b <= 256:
+       r += r_inc
+       g += g_inc
+       b += b_inc
+       np.fill((int(r), int(g), int(b)))
+       np.show()
+       time.sleep(delay)
+
+
+def sparkle(color1, color2, delay):
+   np.fill(color1)
+   for i in range(4):
+       np[random.randint(0, 9)] = color2
+   np.show()
+   time.sleep(delay)
+
+
+
+
+
+def chase(color1, color2, loop = 20, count=3, delay=0.1):
+   result = 0
+   for outer in range(count*loop):
+       np.fill(color1)
+       for i in range(num_pixels):
+           if i % count == result:
+               np[i] = color2
+       np.show()
+       time.sleep(delay)
+       result+=1
+       result %= count
+
+
+
+def constrain(low, high, value):
+   if value < low:
+       return low
+   if value > high:
+       return high
+   return value
+np.fill((255, 127, 0))
+np.show()
+
+
+
+def fire(background, foreground):
+    for j in range(20):
+       intensity = random.random() * 0.7 + 0.3
+       i_background = [int(i * intensity) for i in background]
+       np.fill(i_background)
+       for i in range(random.randint(2, int(num_pixels/5))):
+           intensity = random.random() * 0.7 + 0.3
+           i_foreground = [int(i * intensity) for i in foreground]
+           np[random.randint(0, num_pixels-1)] = i_foreground
+       np.show()
+       time.sleep(0.06)
+
+def fade_out(rgb, delay=0.1):
+
+   mx = max(rgb[0], max(rgb[1], rgb[2]))
+   r_inc = rgb[0] / mx
+   g_inc = rgb[1] / mx
+   b_inc = rgb[2] / mx
+   r, g, b = rgb
+   while r >= 0 and g >= 0 and b >= 0:
+       r -= r_inc
+       g -= g_inc
+       b -= b_inc
+       np.fill((int(r), int(g), int(b)))
+       np.show()
+       time.sleep(delay)
+
+
+
+
+
+
+
+
+while True:
+   fade_in((194, 2, 255))
+   chase(purple, orange, count=3, loop=30, delay=0.10)
+   for i in range (100):
+       sparkle(orange, green,0.1)
+   fire((255, 91, 0), (255, 20, 0))
+   fade_out((194, 2, 255, 0.02))
+
+
